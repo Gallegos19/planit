@@ -34,7 +34,7 @@ import com.example.planit.components.TopBar
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, navigateToLogin : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Control de estado centralizado
     val scope = rememberCoroutineScope()
 
@@ -43,12 +43,13 @@ fun HomeScreen(navController: NavController) {
         drawerContent = {
             LeftBar(
                 onClose = {
-                    scope.launch { drawerState.close() } // Cierra correctamente
+                    scope.launch { drawerState.close() }
                 },
                 onNavigate = { route ->
                     scope.launch { drawerState.close() }
                     navController.navigate(route)
-                }
+                },
+                navigateToLogin
             )
         },
         content = {

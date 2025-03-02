@@ -3,7 +3,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Group
@@ -25,7 +24,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LeftBar(
     onClose: () -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    navigateToRegister: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -34,7 +34,8 @@ fun LeftBar(
         modifier = Modifier
             .width(screenWidth * 0.75f)
             .fillMaxHeight()
-            .background(Color.White),
+            .background(Color.White)
+            .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
@@ -61,26 +62,29 @@ fun LeftBar(
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { onClose() },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            logout()
+            logout(navigateToRegister)
         }
     }
 }
 
 @Composable
-fun logout() {
+fun logout(navigateToLogin: () -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center // Centrar elementos
-    ) {
+            .fillMaxWidth()
+            .clickable{navigateToLogin()},
+        horizontalArrangement = Arrangement.Center
+    )  {
         Text("Cerrar Sesión", color = Color.White) // Asegurar color blanco para visibilidad
         Spacer(modifier = Modifier.width(8.dp)) // Espaciado mejorado
         Icon(imageVector = Icons.Default.Logout, contentDescription = "Cerrar Sesión", tint = Color.White)
