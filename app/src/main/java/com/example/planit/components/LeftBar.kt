@@ -86,7 +86,7 @@ fun logout(navigateToLogin: () -> Unit) {
         horizontalArrangement = Arrangement.Center
     )  {
         Text("Cerrar Sesión", color = Color.White) // Asegurar color blanco para visibilidad
-        Spacer(modifier = Modifier.width(8.dp)) // Espaciado mejorado
+        Spacer(modifier = Modifier.width(8.dp))
         Icon(imageVector = Icons.Default.Logout, contentDescription = "Cerrar Sesión", tint = Color.White)
     }
 }
