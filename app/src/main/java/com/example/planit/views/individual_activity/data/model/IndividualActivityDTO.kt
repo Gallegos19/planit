@@ -10,6 +10,5 @@ data class IndividualActivityDTO(
     val category: String,
     val status: String,
     val description: String,
-    @Serializable(with = DateSerializer::class)
-    val date: Date
+    val date: String
 )

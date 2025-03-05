@@ -54,7 +54,7 @@ class IndividualActivityViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 println("Iniciando peticion actividad individual")
-                val result = service.getActivities(GlobalStorage.getIdActivity()?.toInt()!!)
+                val result = service.getActivities(1)
                 result.onSuccess { activity ->
                     _title.value = activity.title
                     _date.value = activity.date.toString()
@@ -63,9 +63,11 @@ class IndividualActivityViewModel : ViewModel() {
                     _description.value = activity.description
                     _error.value = ""
                 }.onFailure { exception ->
+                    println("Error en fetchActivity: ${exception.message}")
                     _error.value = exception.message ?: "Error desconocido"
                 }
             } catch (e: Exception) {
+                println("Excepción capturada en fetchActivity: ${e.message}")
                 _error.value = e.message ?: "Error desconocido"
             } finally {
                 _loading.value = false

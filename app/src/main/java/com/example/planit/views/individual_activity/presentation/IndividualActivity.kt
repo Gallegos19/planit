@@ -42,6 +42,7 @@ fun IndividualActivity(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val title by remember { derivedStateOf { individualActivityViewModel.title } }
 
     // Ejecuta fetchActivity() cuando la pantalla se cargue
     LaunchedEffect(Unit) {
@@ -79,7 +80,7 @@ fun IndividualActivity(
                             .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Title("Actividad")
+                        Title(title)
                         Spacer(modifier = Modifier.height(20.dp))
                         Line()
                         Spacer(modifier = Modifier.height(20.dp))
@@ -95,9 +96,23 @@ fun IndividualActivity(
 
 @Composable
 fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
-    val date by remember { derivedStateOf { individualActivityViewModel.date } }
-    val description by remember { derivedStateOf { individualActivityViewModel.description } }
-    val category by remember { derivedStateOf { individualActivityViewModel.category } }
+    var date by remember { mutableStateOf(individualActivityViewModel.date) }
+    var description by remember { mutableStateOf(individualActivityViewModel.description) }
+    var category by remember { mutableStateOf(individualActivityViewModel.category) }
+
+// Mantiene la sincronización sin perder los datos al escribir
+    val updatedDate by rememberUpdatedState(individualActivityViewModel.date)
+    val updatedDescription by rememberUpdatedState(individualActivityViewModel.description)
+    val updatedCategory by rememberUpdatedState(individualActivityViewModel.category)
+
+// Actualiza los valores cuando cambian en el ViewModel, pero solo si el usuario no los ha editado manualmente
+    LaunchedEffect(updatedDate, updatedDescription, updatedCategory) {
+        if (date.isBlank()) date = updatedDate
+        if (description.isBlank()) description = updatedDescription
+        if (category.isBlank()) category = updatedCategory
+    }
+
+
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
@@ -140,14 +155,17 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
 
             OutlinedTextField(
                 value = date,
-                onValueChange = {},
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { datePickerDialog.show() },
+                onValueChange = { newValue ->
+                    date = newValue
+                    individualActivityViewModel.changeDate(newValue)
+                },
+                placeholder = { Text("Selecciona una fecha") },
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                textStyle = LocalTextStyle.current.copy(color = Color.Black),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black,
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     disabledContainerColor = Color.White
@@ -176,11 +194,17 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
 
             OutlinedTextField(
                 value = description,
-                onValueChange = { individualActivityViewModel.changeDescription(it) },
+                onValueChange = { newValue ->
+                    description = newValue
+                    individualActivityViewModel.changeDescription(newValue)
+                },
                 placeholder = { Text("Escribe la descripción de la actividad") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black,
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     disabledContainerColor = Color.White
@@ -204,11 +228,17 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
 
             OutlinedTextField(
                 value = category,
-                onValueChange = { individualActivityViewModel.changeCategory(it) },
+                onValueChange = { newValue ->
+                    category = newValue
+                    individualActivityViewModel.changeCategory(newValue)
+                },
                 placeholder = { Text("Escribe la categoría de la actividad") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Black,
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     disabledContainerColor = Color.White
