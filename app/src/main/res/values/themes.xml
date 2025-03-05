@@ -3,10 +3,9 @@
 
     <style name="Theme.Planit" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <!-- Estilo oscuro para DatePickerDialog -->
-    <style name="MyDarkDatePicker" parent="android:Theme.Material.Light.Dialog">
-        <item name="android:windowBackground">@color/black</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:datePickerStyle">@style/MyDarkDatePicker</item>
+    <style name="Theme.Planit.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
     </style>
+
+
 </resources>

@@ -1,3 +1,5 @@
+package com.example.planit.components.left_bar.presentation
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,16 +21,25 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.planit.R
+import com.example.planit.components.left_bar.data.model.ActivityUserDTO
 import kotlinx.coroutines.launch
 
 @Composable
 fun LeftBar(
     onClose: () -> Unit,
     onNavigate: (String) -> Unit,
-    navigateToRegister: () -> Unit
+    navigateToRegister: () -> Unit,
+    navigationToIndividualActivity: () -> Unit,
+    navigationToGeneralTeam: () -> Unit,
+    leftBarViewModel: LeftBarViewModel,
 ) {
     val scope = rememberCoroutineScope()
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
+    // Estado del ViewModel
+    val activities by remember { derivedStateOf { leftBarViewModel.activities } }
+    val loading by remember { derivedStateOf { leftBarViewModel.loading } }
+    val error by remember { derivedStateOf { leftBarViewModel.error } }
 
     Column(
         modifier = Modifier
@@ -56,6 +67,41 @@ fun LeftBar(
                 scope.launch { onClose() }
                 onNavigate("yourSpace")
             }
+
+            // Mostrar lista de actividades
+            when {
+                loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+                error.isNotEmpty() -> {
+                    Text(
+                        text = "Error: $error",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                activities.isNotEmpty() -> {
+                    Column(modifier = Modifier.padding(start = 16.dp)) {
+                        activities.forEach { activity ->
+                            ActivityItem(activity) {
+                                scope.launch {
+                                    onClose() // Cierra la barra antes de navegar
+                                    leftBarViewModel.changeActivityId(activity.activity_id)
+                                    navigationToIndividualActivity()
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    Text(
+                        text = "No tienes actividades registradas",
+                        color = Color.Gray,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
             DrawerItem("Espacios de Equipo", Icons.Default.Group) {
                 scope.launch { onClose() }
                 onNavigate("teamSpaces")
@@ -78,14 +124,28 @@ fun LeftBar(
 }
 
 @Composable
+fun ActivityItem(activity: ActivityUserDTO, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 16.dp)
+            .background(Color.LightGray.copy(alpha = 0.3f))
+            .clickable { onClick() }  // Hace que la actividad sea seleccionable
+            .padding(8.dp)
+    ) {
+        Text(text = activity.title, color = Color.Black, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
 fun logout(navigateToLogin: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{navigateToLogin()},
+            .clickable { navigateToLogin() },
         horizontalArrangement = Arrangement.Center
-    )  {
-        Text("Cerrar Sesión", color = Color.White) // Asegurar color blanco para visibilidad
+    ) {
+        Text("Cerrar Sesión", color = Color.White)
         Spacer(modifier = Modifier.width(8.dp))
         Icon(imageVector = Icons.Default.Logout, contentDescription = "Cerrar Sesión", tint = Color.White)
     }

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planit.components.Logo
 import com.example.planit.components.Title
+import com.example.planit.views.register.data.model.CreateUserRequest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -44,27 +46,31 @@ fun RegisterScreen(
                     .fillMaxSize()
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp) // Espaciado uniforme
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(60.dp))
                     Logo()
-                    Forms(navigateToLogin)
+                    Forms(registerViewModel, navigateToLogin)
                     ToLogin(navigateToLogin)
-                    Spacer(modifier = Modifier.height(40.dp)) // Espacio al final para evitar colisiones con el teclado
+                    Spacer(modifier = Modifier.height(40.dp))
                 }
             }
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Forms(navigateToLogin: () -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var lastname by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun Forms(registerViewModel: RegisterViewModel, navigateToLogin: () -> Unit) {
+    val nombre by registerViewModel.nombre.observeAsState("")
+    val apellido by registerViewModel.apellido.observeAsState("")
+    val email by registerViewModel.correo.observeAsState("")
+    val password by registerViewModel.password.observeAsState("")
+    val success by registerViewModel.success.observeAsState(false)
+    val error by registerViewModel.error.observeAsState("")
+
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     Column(
@@ -81,12 +87,12 @@ fun Forms(navigateToLogin: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            value = name,
-            onValueChange = { name = it },
+            value = nombre,
+            onValueChange = { registerViewModel.onChangeNombre(it) },
             label = { Text("Nombre(s)", color = Color.Black) },
             shape = RoundedCornerShape(10.dp),
             placeholder = { Text("Ingresa tu nombre") },
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "name", tint = Color.Black) },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Nombre", tint = Color.Black) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -96,8 +102,8 @@ fun Forms(navigateToLogin: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            value = lastname,
-            onValueChange = { lastname = it },
+            value = apellido,
+            onValueChange = { registerViewModel.onChangeApellido(it) },
             label = { Text("Apellido(s)", color = Color.Black) },
             shape = RoundedCornerShape(10.dp),
             placeholder = { Text("Ingresa tu apellido") },
@@ -110,10 +116,9 @@ fun Forms(navigateToLogin: () -> Unit) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Campo de Correo Electrónico
         TextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { registerViewModel.onChangeCorreo(it) },
             label = { Text("Correo electrónico", color = Color.Black) },
             shape = RoundedCornerShape(10.dp),
             placeholder = { Text("Ingresa tu correo") },
@@ -126,10 +131,9 @@ fun Forms(navigateToLogin: () -> Unit) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Campo de Contraseña
         TextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { registerViewModel.onChangePassword(it) },
             label = { Text("Contraseña", color = Color.Black) },
             shape = RoundedCornerShape(10.dp),
             placeholder = { Text("Ingresa tu contraseña", color = Color.DarkGray) },
@@ -152,9 +156,11 @@ fun Forms(navigateToLogin: () -> Unit) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Botón de Registro
         Button(
-            onClick = navigateToLogin,
+            onClick = {
+                val user = CreateUserRequest(nombre, apellido, email, password)
+                registerViewModel.onClick(user)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -164,9 +170,20 @@ fun Forms(navigateToLogin: () -> Unit) {
             Text("Registrarse", color = Color.White, fontSize = 16.sp)
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+
+        if (error.isNotEmpty()) {
+            Text(error, color = Color.Red)
+        }
+
+        if (success) {
+            LaunchedEffect(success) {
+                navigateToLogin()
+            }
+        }
     }
 }
+
 
 // Función para definir los colores del TextField de manera uniforme
 @Composable

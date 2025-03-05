@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrainsKotlinSerialization)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -65,6 +66,12 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.0.0")
     implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation ("androidx.compose.material3:material3:1.1.2")
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

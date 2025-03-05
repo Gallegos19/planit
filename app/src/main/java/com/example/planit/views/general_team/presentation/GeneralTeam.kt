@@ -1,11 +1,9 @@
 package com.example.planit.views.general_team.presentation
 
-import LeftBar
+import com.example.planit.components.left_bar.presentation.LeftBar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -27,10 +25,11 @@ import androidx.navigation.NavController
 import com.example.planit.components.Line
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
+import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun GeneralTeam(navController: NavController, navigateToLogin: () -> Unit) {
+fun GeneralTeam(navController: NavController,leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -43,7 +42,10 @@ fun GeneralTeam(navController: NavController, navigateToLogin: () -> Unit) {
                     scope.launch { drawerState.close() }
                     navController.navigate(route)
                 },
-                navigateToLogin
+                navigateToLogin,
+                navigationToIndividualActivity,
+                navigationToGeneralTeam,
+                leftBarViewModel
             )
         },
     ) {

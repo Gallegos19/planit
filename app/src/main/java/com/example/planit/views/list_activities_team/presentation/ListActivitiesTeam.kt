@@ -1,6 +1,6 @@
 package com.example.planit.views.list_activities_team.presentation
 
-import LeftBar
+import com.example.planit.components.left_bar.presentation.LeftBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,17 +18,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.planit.components.Line
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
+import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListActivitiesTeam(navController: NavController, navigateToLogin: () -> Unit) {
+fun ListActivitiesTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -41,7 +40,10 @@ fun ListActivitiesTeam(navController: NavController, navigateToLogin: () -> Unit
                     scope.launch { drawerState.close() }
                     navController.navigate(route)
                 },
-                navigateToLogin
+                navigateToLogin,
+                navigationToIndividualActivity,
+                navigationToGeneralTeam,
+                leftBarViewModel
             )
         },
     ) {

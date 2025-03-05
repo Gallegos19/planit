@@ -1,6 +1,6 @@
 package com.example.planit.views.members_team.presentation
 
-import LeftBar
+import com.example.planit.components.left_bar.presentation.LeftBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
+import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun MembersTeam(navController: NavController, navigateToLogin: () -> Unit) {
+fun MembersTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val members = remember { mutableStateListOf("Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar") }
@@ -41,7 +42,10 @@ fun MembersTeam(navController: NavController, navigateToLogin: () -> Unit) {
                     scope.launch { drawerState.close() }
                     navController.navigate(route)
                 },
-                navigateToLogin
+                navigateToLogin,
+                navigationToIndividualActivity,
+                navigationToGeneralTeam,
+                leftBarViewModel
             )
         },
     ) {

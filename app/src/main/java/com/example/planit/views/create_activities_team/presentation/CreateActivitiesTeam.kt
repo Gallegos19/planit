@@ -1,5 +1,6 @@
 package com.example.planit.views.create_activities_team.presentation
 
+import com.example.planit.components.left_bar.presentation.LeftBar
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.background
@@ -14,41 +15,63 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
+import com.example.planit.components.left_bar.presentation.LeftBarViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun CreateActivitiesTeam() {
-    Scaffold(
-        topBar = {
-            TopBar(
-                onMenuClick = { /* Abrir menú */ },
-                onProfileClick = { /* Navegar a perfil */ }
+fun CreateActivitiesTeam(leftBarViewModel: LeftBarViewModel, navController: NavController, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            LeftBar(
+                onClose = { scope.launch { drawerState.close() } },
+                onNavigate = { route ->
+                    scope.launch { drawerState.close() }
+                    navController.navigate(route)
+                },
+                navigateToLogin,
+                navigationToIndividualActivity,
+                navigationToGeneralTeam,
+                leftBarViewModel,
             )
         },
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Title("Actividades")
-            Spacer(modifier = Modifier.height(10.dp))
-            Divider(color = Color.Black, thickness = 3.dp)
-            Spacer(modifier = Modifier.height(20.dp))
-            ActivityForm()
+    ) {
+        Scaffold(
+            topBar = {
+                TopBar(
+                    onMenuClick = { scope.launch { drawerState.close() } },
+                    onProfileClick = { /* Navegar a perfil */ }
+                )
+            },
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Title("Actividades")
+                Spacer(modifier = Modifier.height(10.dp))
+                Divider(color = Color.Black, thickness = 3.dp)
+                Spacer(modifier = Modifier.height(20.dp))
+                ActivityForm()
+            }
         }
     }
 }
