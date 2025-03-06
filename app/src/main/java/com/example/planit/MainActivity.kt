@@ -24,8 +24,9 @@ import com.example.planit.ui.theme.PlanitTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SessionManager.init(this)
         GlobalStorage.init(this)
+        SessionManager.init(this)
+
         enableEdgeToEdge()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
