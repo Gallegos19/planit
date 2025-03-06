@@ -8,6 +8,7 @@ object GlobalStorage {
     private const val ID_ACTIVITY_KEY = "id_activity"
     private const val USER_ID_KEY = "user_id"
     private const val GROUP_ID_KEY = "group_id"
+    private const val UPLOAD_DATA = "upload_data"
 
     private var sharedPreferences: SharedPreferences? = null
 
@@ -55,6 +56,18 @@ object GlobalStorage {
     fun getGroupId(): Int? {
         checkInitialization()
         return sharedPreferences?.getInt(GROUP_ID_KEY, -1)?.takeIf { it != -1 }
+    }
+
+    // Guardar Upload Data
+    fun saveUploadData(upload: Boolean) {
+        checkInitialization()
+        sharedPreferences?.edit()?.putBoolean(UPLOAD_DATA, upload)?.apply()
+    }
+
+    // Obtener Upload Data
+    fun getUploadData(): Boolean {
+        checkInitialization()
+        return sharedPreferences?.getBoolean(UPLOAD_DATA, false) ?: false
     }
 
     // Borrar solo el ID de actividad

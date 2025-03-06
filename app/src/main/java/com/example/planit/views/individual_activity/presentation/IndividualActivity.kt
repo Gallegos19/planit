@@ -28,6 +28,7 @@ import com.example.planit.components.Line
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
+import com.example.planit.core.data.GlobalStorage
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -38,7 +39,8 @@ fun IndividualActivity(
     leftBarViewModel: LeftBarViewModel,
     navigateToLogin: () -> Unit,
     navigationToIndividualActivity: () -> Unit,
-    navigationToGeneralTeam: () -> Unit
+    navigationToGeneralTeam: () -> Unit,
+    navigateToHome: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -47,6 +49,13 @@ fun IndividualActivity(
     // Ejecuta fetchActivity() cuando la pantalla se cargue
     LaunchedEffect(Unit) {
         individualActivityViewModel.fetchActivity()
+    }
+
+    // Escuchar cambios en deleteSuccess para redirigir a Home
+    LaunchedEffect(individualActivityViewModel.deleteSuccess) {
+        if (individualActivityViewModel.deleteSuccess) {
+            navigateToHome() // Redirigir cuando la actividad se elimine con éxito
+        }
     }
 
     ModalNavigationDrawer(
@@ -271,7 +280,12 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
 
             // Botón Eliminar
             Button(
-                onClick = { /* Lógica para eliminar */ },
+                onClick = {
+                    val activityId = GlobalStorage.getIdActivity()
+                    if (activityId != null) {
+                        individualActivityViewModel.deleteIndividualActivity(activityId)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -288,7 +302,6 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
     }
 }
 
-// Función para obtener el nombre del mes en español
 fun getMonthName(month: Int): String {
     return listOf(
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",

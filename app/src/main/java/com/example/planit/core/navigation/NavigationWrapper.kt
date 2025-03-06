@@ -45,7 +45,7 @@ fun NavigationWrapper(modifier: Modifier = Modifier){
         }
 
         composable<IndividualActivity> {
-            IndividualActivity(IndividualActivityViewModel(), navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            IndividualActivity(IndividualActivityViewModel(), navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigateToHome = {navController.navigate(Home)})
         }
 
         composable<GeneralTeam> {

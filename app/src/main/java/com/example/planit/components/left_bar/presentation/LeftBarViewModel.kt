@@ -7,6 +7,7 @@ import com.example.planit.components.left_bar.data.model.ActivityUserDTO
 import com.example.planit.components.left_bar.domain.GetActivityUseCase
 import com.example.planit.core.data.GlobalStorage
 import com.example.planit.core.data.SessionManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LeftBarViewModel : ViewModel() {
@@ -14,7 +15,7 @@ class LeftBarViewModel : ViewModel() {
     private val getActivitiesUseCase = GetActivityUseCase()
 
     private val _activities = mutableStateOf<List<ActivityUserDTO>>(emptyList())
-    val activities : List<ActivityUserDTO> get() = _activities.value
+    val activities: List<ActivityUserDTO> get() = _activities.value
 
     private val _loading = mutableStateOf(false)
     val loading: Boolean get() = _loading.value
@@ -23,18 +24,19 @@ class LeftBarViewModel : ViewModel() {
     val error: String get() = _error.value
 
     private val _activityid = mutableStateOf(0)
-    val acvityid: Int get() = _activityid.value
+    val activityid: Int get() = _activityid.value
 
     private val _message = mutableStateOf("")
     val message: String get() = _message.value
 
     init {
         fetchActivities()
+        startUploadDataObserver()
     }
 
     fun changeActivityId(activityid: Int) {
-        println("id actividad" + activityid)
-        _activityid.value =activityid
+        println("id actividad $activityid")
+        _activityid.value = activityid
         GlobalStorage.saveIdActivity(activityid)
     }
 
@@ -53,6 +55,18 @@ class LeftBarViewModel : ViewModel() {
                 _error.value = e.message ?: "Error desconocido"
             } finally {
                 _loading.value = false
+            }
+        }
+    }
+
+    private fun startUploadDataObserver() {
+        viewModelScope.launch {
+            while (true) {
+                delay(2000)
+                if (GlobalStorage.getUploadData()) {
+                    fetchActivities() // Vuelve a obtener las actividades
+                    GlobalStorage.saveUploadData(false)
+                }
             }
         }
     }
