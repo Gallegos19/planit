@@ -1,5 +1,6 @@
 package com.example.planit.core.navigation
 
+import CreateIndividualActivitiesViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -42,34 +43,34 @@ fun NavigationWrapper(modifier: Modifier = Modifier){
         }
 
         composable<Home> {
-            HomeScreen(navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            HomeScreen(navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<IndividualActivity> {
-            IndividualActivity(IndividualActivityViewModel(), navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigateToHome = {navController.navigate(Home)})
+            IndividualActivity(IndividualActivityViewModel(), navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigateToHome = {navController.navigate(Home)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<GeneralTeam> {
-            GeneralTeam(navController, leftBarViewModel,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            GeneralTeam(navController, leftBarViewModel,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<ListActivitiesTeam> {
-            ListActivitiesTeam(navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            ListActivitiesTeam(navController, leftBarViewModel, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
         composable<MembersTeam> {
-            MembersTeam (navController, leftBarViewModel ,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            MembersTeam (navController, leftBarViewModel ,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<CreateActivitiesTeam> {
-            CreateActivitiesTeam(leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            CreateActivitiesTeam(leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<WatchActivityTeam> {
-            WatchActivityTeam(navController, leftBarViewModel ,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            WatchActivityTeam(navController, leftBarViewModel ,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
 
         composable<CreateIndividualActivities> {
-            CreateIndividualActivities (leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+            CreateIndividualActivities (createIndividualActivitiesViewModel = CreateIndividualActivitiesViewModel(),leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)})
         }
     }
 }

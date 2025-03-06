@@ -1,6 +1,8 @@
 package com.example.planit.core.network
 
 import com.example.planit.components.left_bar.data.datasource.LeftBarService
+import com.example.planit.core.navigation.CreateIndividualActivities
+import com.example.planit.views.create_individual_activities.data.datasource.CreateIndividualActivitiesService
 import com.example.planit.views.individual_activity.data.datasource.IndividualActivityService
 import com.example.planit.views.login.data.datasource.LoginService
 import com.example.planit.views.register.data.datasource.RegisterService
@@ -43,6 +45,10 @@ object RetrofitHelper{
 
     fun getRetrofitIndividualActivity() : IndividualActivityService {
         return retrofit.create(IndividualActivityService::class.java)
+    }
+
+    fun getRetrofitCreateIndividualActivity() : CreateIndividualActivitiesService{
+        return retrofit.create(CreateIndividualActivitiesService::class.java)
     }
 
 }

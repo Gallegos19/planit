@@ -31,6 +31,7 @@ fun LeftBar(
     navigateToRegister: () -> Unit,
     navigationToIndividualActivity: () -> Unit,
     navigationToGeneralTeam: () -> Unit,
+    navigationToCreateIndividualActivity : () -> Unit,
     leftBarViewModel: LeftBarViewModel,
 ) {
     val scope = rememberCoroutineScope()
@@ -65,7 +66,7 @@ fun LeftBar(
             }
             DrawerItem("Tu Espacio", Icons.Default.Add) {
                 scope.launch { onClose() }
-                onNavigate("yourSpace")
+                navigationToCreateIndividualActivity()
             }
 
             // Mostrar lista de actividades

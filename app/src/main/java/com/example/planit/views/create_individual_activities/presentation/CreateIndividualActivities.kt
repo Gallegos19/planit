@@ -1,5 +1,6 @@
 package com.example.planit.views.create_individual_activities.presentation
 
+import CreateIndividualActivitiesViewModel
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.background
@@ -47,13 +48,15 @@ import com.example.planit.components.Title
 import com.example.planit.components.TopBar
 import com.example.planit.components.left_bar.presentation.LeftBar
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
+import com.example.planit.core.data.SessionManager
+import com.example.planit.views.create_individual_activities.data.model.CreateIndividualActivityDTO
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun CreateIndividualActivities(leftBarViewModel: LeftBarViewModel, navController: NavController, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit) {
+fun CreateIndividualActivities(createIndividualActivitiesViewModel: CreateIndividualActivitiesViewModel,leftBarViewModel: LeftBarViewModel, navController: NavController, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -61,7 +64,9 @@ fun CreateIndividualActivities(leftBarViewModel: LeftBarViewModel, navController
         drawerState = drawerState,
         drawerContent = {
             LeftBar(
-                onClose = { scope.launch { drawerState.close() } },
+                onClose = {
+                    scope.launch { drawerState.close() }
+                },
                 onNavigate = { route ->
                     scope.launch { drawerState.close() }
                     navController.navigate(route)
@@ -69,6 +74,7 @@ fun CreateIndividualActivities(leftBarViewModel: LeftBarViewModel, navController
                 navigateToLogin,
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
+                navigationToCreateIndividualActivity,
                 leftBarViewModel,
             )
         },
@@ -76,7 +82,9 @@ fun CreateIndividualActivities(leftBarViewModel: LeftBarViewModel, navController
         Scaffold(
             topBar = {
                 TopBar(
-                    onMenuClick = { scope.launch { drawerState.close() } },
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    },
                     onProfileClick = { /* Navegar a perfil */ }
                 )
             },
@@ -92,28 +100,28 @@ fun CreateIndividualActivities(leftBarViewModel: LeftBarViewModel, navController
                 Title("Actividades")
                 Spacer(modifier = Modifier.height(10.dp))
                 Divider(color = Color.Black, thickness = 3.dp)
-                Spacer(modifier = Modifier.height(20.dp))
-                ActivityForm()
+                Spacer(modifier = Modifier.height(60.dp))
+                ActivityForm(createIndividualActivitiesViewModel)
             }
         }
     }
 }
 
 @Composable
-fun ActivityForm() {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var responsible by remember { mutableStateOf("") }
+fun ActivityForm(createIndividualActivitiesViewModel: CreateIndividualActivitiesViewModel) {
+    val title by remember { mutableStateOf("") }
+    val description by remember { mutableStateOf("") }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
-    val dateFormat = SimpleDateFormat("dd 'de' MMMM 'del' yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     var estimatedDate by remember { mutableStateOf(dateFormat.format(calendar.time)) }
 
     val datePickerDialog = DatePickerDialog(
         context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+        { _, year: Int, month: Int, dayOfMonth: Int ->
             calendar.set(year, month, dayOfMonth)
             estimatedDate = dateFormat.format(calendar.time)
+            createIndividualActivitiesViewModel.updateDate(estimatedDate) // 🔹 Usar .value
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -128,50 +136,25 @@ fun ActivityForm() {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
+                value = createIndividualActivitiesViewModel.title.value,  // 🔹 Agregar .value
+                onValueChange = { createIndividualActivitiesViewModel.updateTitle(it) },
                 label = { Text("Título de la actividad") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
+                value = createIndividualActivitiesViewModel.description.value,  // 🔹 Agregar .value
+                onValueChange = { createIndividualActivitiesViewModel.updateDescription(it) },
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            OutlinedTextField(
-                value = responsible,
-                onValueChange = { responsible = it },
-                label = { Text("Responsable") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Agregar otro responsable",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { /* Acción para agregar */ }
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Icon(
-                    imageVector = Icons.Default.PersonAdd,
-                    contentDescription = "Agregar responsable",
-                    tint = Color.Black
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = estimatedDate,
+                    value = createIndividualActivitiesViewModel.date.value,  // 🔹 Agregar .value
                     onValueChange = { },
                     label = { Text("Fecha Estimada") },
                     modifier = Modifier
@@ -179,7 +162,7 @@ fun ActivityForm() {
                         .clickable { datePickerDialog.show() },
                     readOnly = true
                 )
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(20.dp))
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Seleccionar fecha",
@@ -189,7 +172,18 @@ fun ActivityForm() {
             }
             Spacer(modifier = Modifier.height(20.dp))
             Button(
-                onClick = { /* Guardar actividad */ },
+                onClick = {
+                    val userId = SessionManager.getUserId()
+                    val activity = CreateIndividualActivityDTO(
+                        user_id = userId,
+                        title = createIndividualActivitiesViewModel.title.value,
+                        category_id = createIndividualActivitiesViewModel.categoryId.value,
+                        status = createIndividualActivitiesViewModel.status.value,
+                        description = createIndividualActivitiesViewModel.description.value,
+                        date = createIndividualActivitiesViewModel.date.value
+                    )
+                    createIndividualActivitiesViewModel.createIndividualActivity(activity)
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                 modifier = Modifier.fillMaxWidth()
             ) {
