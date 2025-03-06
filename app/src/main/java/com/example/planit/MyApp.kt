@@ -5,8 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
+import com.example.planit.core.data.SessionManager
+import com.example.planit.utils.save_token.data.model.TokenDTO
+import com.example.planit.utils.save_token.domain.SaveTokenUseCase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyApp : Application() {
     companion object {
@@ -14,6 +20,7 @@ class MyApp : Application() {
     }
 
     override fun onCreate() {
+        val saveToken = SaveTokenUseCase()
         super.onCreate()
         println("App creada")
 
@@ -27,6 +34,16 @@ class MyApp : Application() {
                 return@addOnCompleteListener
             }
             val token = it.result
+            SessionManager.saveFCMToken(token)
+            val userId = SessionManager.getUserId()
+            if (userId > 0) {
+                val bodytoken:TokenDTO = TokenDTO(SessionManager.getUserId(),token)
+                CoroutineScope(Dispatchers.IO).launch {
+                    saveToken.saveToken(bodytoken)
+                }
+            }
+
+
             println("El valor del token es")
             println(token)
             Log.d("dbug", token)
