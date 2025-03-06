@@ -32,6 +32,8 @@ fun LeftBar(
     navigationToIndividualActivity: () -> Unit,
     navigationToGeneralTeam: () -> Unit,
     navigationToCreateIndividualActivity : () -> Unit,
+    navigationToHome : () -> Unit,
+    navigationToAddTeam : () -> Unit,
     leftBarViewModel: LeftBarViewModel,
 ) {
     val scope = rememberCoroutineScope()
@@ -62,7 +64,7 @@ fun LeftBar(
             Spacer(modifier = Modifier.height(10.dp))
             DrawerItem("Inicio", Icons.Default.Home) {
                 scope.launch { onClose() }
-                onNavigate("home")
+                navigationToHome()
             }
             DrawerItem("Tu Espacio", Icons.Default.Add) {
                 scope.launch { onClose() }
@@ -105,7 +107,7 @@ fun LeftBar(
 
             DrawerItem("Espacios de Equipo", Icons.Default.Group) {
                 scope.launch { onClose() }
-                onNavigate("teamSpaces")
+                navigationToAddTeam()
             }
         }
 

@@ -28,7 +28,7 @@ import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun MembersTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit) {
+fun MembersTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val members = remember { mutableStateListOf("Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar", "Diego Bejar") }
@@ -46,6 +46,8 @@ fun MembersTeam(navController: NavController, leftBarViewModel: LeftBarViewModel
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
                 navigationToCreateIndividualActivity,
+                navigationToHome,
+                navigationToAddTeam,
                 leftBarViewModel
             )
         },

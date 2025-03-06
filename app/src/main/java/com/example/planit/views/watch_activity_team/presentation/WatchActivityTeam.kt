@@ -30,7 +30,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun WatchActivityTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit) {
+fun WatchActivityTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -47,6 +47,8 @@ fun WatchActivityTeam(navController: NavController, leftBarViewModel: LeftBarVie
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
                 navigationToCreateIndividualActivity,
+                navigationToHome,
+                navigationToAddTeam,
                 leftBarViewModel
             )
         },

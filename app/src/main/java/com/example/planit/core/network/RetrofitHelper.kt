@@ -3,6 +3,7 @@ package com.example.planit.core.network
 import com.example.planit.components.left_bar.data.datasource.LeftBarService
 import com.example.planit.core.navigation.CreateIndividualActivities
 import com.example.planit.utils.save_token.data.datasource.SaveTokenService
+import com.example.planit.views.add_team.data.datasource.AddTeamService
 import com.example.planit.views.create_individual_activities.data.datasource.CreateIndividualActivitiesService
 import com.example.planit.views.individual_activity.data.datasource.IndividualActivityService
 import com.example.planit.views.login.data.datasource.LoginService
@@ -54,6 +55,10 @@ object RetrofitHelper{
 
     fun getRetrofitToken() : SaveTokenService{
         return retrofit.create(SaveTokenService::class.java)
+    }
+
+    fun getRetrofitAddTeam() : AddTeamService{
+        return retrofit.create(AddTeamService::class.java)
     }
 
 }

@@ -31,3 +31,6 @@ object WatchActivityTeam
 
 @Serializable
 object CreateIndividualActivities
+
+@Serializable
+object AddTeam

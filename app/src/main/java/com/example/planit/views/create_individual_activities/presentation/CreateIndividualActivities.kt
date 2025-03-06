@@ -56,7 +56,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun CreateIndividualActivities(createIndividualActivitiesViewModel: CreateIndividualActivitiesViewModel,leftBarViewModel: LeftBarViewModel, navController: NavController, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit) {
+fun CreateIndividualActivities(createIndividualActivitiesViewModel: CreateIndividualActivitiesViewModel,leftBarViewModel: LeftBarViewModel, navController: NavController, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -75,6 +75,8 @@ fun CreateIndividualActivities(createIndividualActivitiesViewModel: CreateIndivi
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
                 navigationToCreateIndividualActivity,
+                navigationToHome,
+                navigationToAddTeam,
                 leftBarViewModel,
             )
         },

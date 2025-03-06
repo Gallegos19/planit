@@ -44,6 +44,7 @@ fun IndividualActivity(
     navigationToIndividualActivity: () -> Unit,
     navigationToGeneralTeam: () -> Unit,
     navigationToCreateIndividualActivity : () -> Unit,
+    navigationToAddTeam : () -> Unit,
     navigateToHome: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -75,6 +76,8 @@ fun IndividualActivity(
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
                 navigationToCreateIndividualActivity,
+                navigateToHome,
+                navigationToAddTeam,
                 leftBarViewModel
             )
         },

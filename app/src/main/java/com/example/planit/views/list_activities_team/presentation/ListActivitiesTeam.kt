@@ -27,7 +27,7 @@ import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListActivitiesTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit,navigationToCreateIndividualActivity : () -> Unit) {
+fun ListActivitiesTeam(navController: NavController, leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit,navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -44,6 +44,8 @@ fun ListActivitiesTeam(navController: NavController, leftBarViewModel: LeftBarVi
                 navigationToIndividualActivity,
                 navigationToGeneralTeam,
                 navigationToCreateIndividualActivity,
+                navigationToHome,
+                navigationToAddTeam,
                 leftBarViewModel
             )
         },
