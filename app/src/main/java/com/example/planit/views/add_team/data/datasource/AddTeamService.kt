@@ -7,6 +7,6 @@ import retrofit2.http.POST
 
 interface AddTeamService {
 
-    @POST("/group/user/")
+    @POST("group/user/")
     suspend fun addTeam(@Body team:TeamDTO) : Response<String>
 }

@@ -26,12 +26,32 @@ import com.example.planit.components.Line
 import com.example.planit.components.Title
 import com.example.planit.components.TopBar
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
+import com.example.planit.core.data.GlobalStorage
+import com.example.planit.views.general_team.data.model.UpdateGroupDTO
 import kotlinx.coroutines.launch
 
 @Composable
-fun GeneralTeam(navController: NavController,leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
+fun GeneralTeam(generalTeamViewModel: GeneralTeamViewModel,navController: NavController,leftBarViewModel: LeftBarViewModel, navigateToLogin: () -> Unit, navigationToIndividualActivity : () -> Unit, navigationToGeneralTeam : () -> Unit, navigationToCreateIndividualActivity : () -> Unit, navigationToHome : () -> Unit, navigationToAddTeam : () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val title by remember { derivedStateOf { generalTeamViewModel.title } }
+
+    LaunchedEffect(Unit){
+        generalTeamViewModel.fetchGroupInfo();
+    }
+
+    LaunchedEffect(generalTeamViewModel.onUpdateSuccess) {
+        if (generalTeamViewModel.onUpdateSuccess) {
+            navigationToHome()
+        }
+    }
+
+    LaunchedEffect(generalTeamViewModel.onDeletedSuccess) {
+        if (generalTeamViewModel.onDeletedSuccess) {
+            navigationToHome()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -70,7 +90,7 @@ fun GeneralTeam(navController: NavController,leftBarViewModel: LeftBarViewModel,
             ) {
                 Title("Equipo")
                 Text(
-                    text = "“Team”",
+                    text = title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -79,16 +99,27 @@ fun GeneralTeam(navController: NavController,leftBarViewModel: LeftBarViewModel,
                 Spacer(modifier = Modifier.height(20.dp))
                 Line()
                 Spacer(modifier = Modifier.height(20.dp))
-                ContentForm()
+                ContentForm(generalTeamViewModel,title)
             }
         }
     }
 }
 
 @Composable
-fun ContentForm() {
-    var codeAccess by remember { mutableStateOf("SM11023") }
-    var description by remember { mutableStateOf("") }
+fun ContentForm(generalTeamViewModel: GeneralTeamViewModel, title:String) {
+    var codeAccess by remember { mutableStateOf(generalTeamViewModel.token) }
+    var description by remember { mutableStateOf(generalTeamViewModel.description) }
+    var leader by remember { mutableStateOf(generalTeamViewModel.leader) }
+
+    val updatedDescription by rememberUpdatedState(generalTeamViewModel.description)
+    val updateToken by rememberUpdatedState(generalTeamViewModel.token)
+    val updateLeader by remember { mutableStateOf(generalTeamViewModel.leader) }
+    // Sincroniza valores iniciales sin sobrescribir cambios del usuario
+    LaunchedEffect(generalTeamViewModel.description) {
+        description = generalTeamViewModel.description.takeIf { it.isNotBlank() } ?: description
+        codeAccess = generalTeamViewModel.token.takeIf { it.isNotBlank() } ?: codeAccess
+        leader = generalTeamViewModel.leader.takeIf { it } ?: leader
+    }
 
     Box(
         modifier = Modifier
@@ -143,7 +174,10 @@ fun ContentForm() {
 
                 OutlinedTextField(
                     value = description,
-                    onValueChange = { description = it },
+                    onValueChange = { newValue ->
+                        description = newValue
+                        generalTeamViewModel.changeDescription(newValue)
+                    },
                     placeholder = { Text("Escribe la descripción de la actividad") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -155,11 +189,13 @@ fun ContentForm() {
                         disabledContainerColor = Color.White,
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black,
+                        disabledTextColor = Color.Black,
                         focusedPlaceholderColor = Color.Black,
                         unfocusedPlaceholderColor = Color.Black
                     ),
                     singleLine = false,
-                    maxLines = 2
+                    maxLines = 2,
+                    enabled = leader
                 )
 
 
@@ -171,37 +207,61 @@ fun ContentForm() {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Button(
-                    onClick = { /* Guardar lógica aquí */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(Color.Black),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Guardar", color = Color.White, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = Color.White)
+                if (leader) {
+                    Button(
+                        onClick = {
+                            val updateGroup = UpdateGroupDTO(
+                                name = title,
+                                description = description
+                            )
+                            val groupId = GlobalStorage.getGroupId()
+                            if (groupId != null) {
+                                generalTeamViewModel.updateGroup(groupId, updateGroup);
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(Color.Black),
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text("Guardar", color = Color.White, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "Guardar",
+                            tint = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Line()
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            val groupId = GlobalStorage.getGroupId()
+                            if (groupId != null) {
+                                generalTeamViewModel.deletedgroup(groupId);
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(Color.Red),
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text("Eliminar", color = Color.White, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
-
-                Spacer(modifier = Modifier.height(20.dp))
-                Line()
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
-                    onClick = { /* Eliminar lógica aquí */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(Color.Red),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Eliminar", color = Color.White, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
