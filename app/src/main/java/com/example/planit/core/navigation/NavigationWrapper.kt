@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import com.example.planit.views.create_activities_team.presentation.CreateActivitiesTeam
+import com.example.planit.views.create_individual_activities.presentation.CreateIndividualActivities
 import com.example.planit.views.general_team.presentation.GeneralTeam
 import com.example.planit.views.home.presentation.HomeScreen
 import com.example.planit.views.individual_activity.presentation.IndividualActivity
@@ -62,8 +63,13 @@ fun NavigationWrapper(modifier: Modifier = Modifier){
         composable<CreateActivitiesTeam> {
             CreateActivitiesTeam(leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
         }
+
         composable<WatchActivityTeam> {
             WatchActivityTeam(navController, leftBarViewModel ,navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
+        }
+
+        composable<CreateIndividualActivities> {
+            CreateIndividualActivities (leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)})
         }
     }
 }

@@ -12,4 +12,6 @@ interface LeftBarService {
     @GET("personal/activity/{id}")
     suspend fun getActivitiesUser(@Path("id") id: Int): Response<List<ActivityUserDTO>>
 
+
+
 }

@@ -4,17 +4,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planit.core.data.GlobalStorage
-import com.example.planit.core.data.SessionManager
+import com.example.planit.views.individual_activity.data.model.CategoryDTO
+import com.example.planit.views.individual_activity.data.model.UpdateIndividualActivityDTO
 import com.example.planit.views.individual_activity.domain.DeleteIndividualActivityUseCase
+import com.example.planit.views.individual_activity.domain.GetCategoriesUseCase
 import com.example.planit.views.individual_activity.domain.UpdateIndividualActivityUseCase
 import com.example.planit.views.individual_activity.domain.getIndividualActivityUseCase
 import kotlinx.coroutines.launch
 
 class IndividualActivityViewModel : ViewModel() {
 
+    //Use Case
     private val service = getIndividualActivityUseCase()
     private val delete = DeleteIndividualActivityUseCase()
     private val update = UpdateIndividualActivityUseCase()
+    private val getCategory = GetCategoriesUseCase()
+
+    private val _categories = mutableStateOf<List<CategoryDTO>>(emptyList())
+    val categories: List<CategoryDTO> get() = _categories.value
 
     private val _loading = mutableStateOf(false)
     val loading: Boolean get() = _loading.value
@@ -31,6 +38,9 @@ class IndividualActivityViewModel : ViewModel() {
     private val _category = mutableStateOf("")
     val category: String get() = _category.value
 
+    private val _categoryId = mutableStateOf(0)
+    val categoryId : Int get() = _categoryId.value
+
     private val _title = mutableStateOf("")
     val title: String get() = _title.value
 
@@ -42,6 +52,13 @@ class IndividualActivityViewModel : ViewModel() {
 
     private val _deleteSucccess = mutableStateOf(false)
     val deleteSuccess: Boolean get() = _deleteSucccess.value
+
+    private val _updateActivity = mutableStateOf(false)
+    val updateActivity: Boolean get() = _updateActivity.value
+
+    init {
+        fetchCategories()
+    }
 
     fun changeDate(date: String) {
         _date.value = date
@@ -57,6 +74,10 @@ class IndividualActivityViewModel : ViewModel() {
 
     fun changeCategory(category: String) {
         _category.value = category
+    }
+
+    fun changeCategoryId(categoryId: Int){
+        _categoryId.value = categoryId
     }
 
     fun fetchActivity() {
@@ -85,6 +106,30 @@ class IndividualActivityViewModel : ViewModel() {
         }
     }
 
+    fun fetchCategories() {
+        _loading.value = true
+        viewModelScope.launch {
+            try {
+                val result = getCategory.getCategories()
+                result.onSuccess { categoriesList ->
+                    _categories.value = categoriesList // Esto debe actualizar la UI
+                    _error.value = ""
+                    println("Categorías cargadas: ${categoriesList.map { it.name }}")
+                }.onFailure { exception ->
+                    _error.value = exception.message ?: "Error desconocido"
+                    println("Error al obtener categorías: ${exception.message}")
+                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Error desconocido"
+                println("Excepción en fetchCategories: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+
+
     fun deleteIndividualActivity(id: Int) {
         viewModelScope.launch {
             _loading.value = true
@@ -106,5 +151,25 @@ class IndividualActivityViewModel : ViewModel() {
         }
     }
 
-
+    fun updateIndividualActivity(id: Int, activity: UpdateIndividualActivityDTO) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val result = update.updateIndividualActivity(id, activity)
+                result.onSuccess {
+                    GlobalStorage.saveUploadData(upload = true)
+                    _message.value = "Actividad Actualizada con éxito"
+                    _updateActivity.value = true
+                    println("Actividad eliminada con éxito, deleteSuccess: ${_updateActivity.value}")
+                    fetchActivity()
+                }.onFailure { exception ->
+                    _error.value = exception.message ?: "Error al actualizar la actividad"
+                    _updateActivity.value = false
+                    println("Error al actualizar: ${_error.value}")
+                }
+            }finally {
+                _loading.value = false
+            }
+        }
+    }
 }

@@ -29,6 +29,8 @@ import com.example.planit.components.Title
 import com.example.planit.components.TopBar
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
 import com.example.planit.core.data.GlobalStorage
+import com.example.planit.core.data.SessionManager
+import com.example.planit.views.individual_activity.data.model.UpdateIndividualActivityDTO
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -108,19 +110,35 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
     var date by remember { mutableStateOf(individualActivityViewModel.date) }
     var description by remember { mutableStateOf(individualActivityViewModel.description) }
     var category by remember { mutableStateOf(individualActivityViewModel.category) }
+    var status by remember { mutableStateOf(individualActivityViewModel.status) }
+    var title by remember { mutableStateOf(individualActivityViewModel.title) }
 
-// Mantiene la sincronización sin perder los datos al escribir
+    val categories = individualActivityViewModel.categories
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf(category) }
+
     val updatedDate by rememberUpdatedState(individualActivityViewModel.date)
     val updatedDescription by rememberUpdatedState(individualActivityViewModel.description)
     val updatedCategory by rememberUpdatedState(individualActivityViewModel.category)
+    val updatedTitle by rememberUpdatedState(individualActivityViewModel.title)
+    val updatedStatus by rememberUpdatedState(individualActivityViewModel.status)
 
-// Actualiza los valores cuando cambian en el ViewModel, pero solo si el usuario no los ha editado manualmente
-    LaunchedEffect(updatedDate, updatedDescription, updatedCategory) {
-        if (date.isBlank()) date = updatedDate
-        if (description.isBlank()) description = updatedDescription
-        if (category.isBlank()) category = updatedCategory
+    // Sincroniza valores iniciales sin sobrescribir cambios del usuario
+    LaunchedEffect(individualActivityViewModel.title, individualActivityViewModel.status, individualActivityViewModel.description, individualActivityViewModel.date, individualActivityViewModel.category) {
+        title = individualActivityViewModel.title.takeIf { it.isNotBlank() } ?: title
+        status = individualActivityViewModel.status.takeIf { it.isNotBlank() } ?: status
+        description = individualActivityViewModel.description.takeIf { it.isNotBlank() } ?: description
+        date = individualActivityViewModel.date.takeIf { it.isNotBlank() } ?: date
+        category = individualActivityViewModel.category.takeIf { it.isNotBlank() } ?: category
+        selectedCategory = individualActivityViewModel.category.takeIf { it.isNotBlank() } ?: selectedCategory
     }
 
+    // Forzar actualización cuando las categorías cambian
+    LaunchedEffect(categories) {
+        if (categories.isNotEmpty()) {
+            selectedCategory = categories.find { it.name == category }?.name ?: categories.first().name
+        }
+    }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -169,7 +187,9 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
                     individualActivityViewModel.changeDate(newValue)
                 },
                 placeholder = { Text("Selecciona una fecha") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { datePickerDialog.show() },
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
@@ -183,7 +203,8 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
                         contentDescription = "Seleccionar fecha",
-                        tint = Color.Black
+                        tint = Color.Black,
+                        modifier = Modifier.clickable { datePickerDialog.show() }
                     )
                 }
             )
@@ -235,32 +256,75 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
             )
             Spacer(modifier = Modifier.height(10.dp))
 
-            OutlinedTextField(
-                value = category,
-                onValueChange = { newValue ->
-                    category = newValue
-                    individualActivityViewModel.changeCategory(newValue)
-                },
-                placeholder = { Text("Escribe la categoría de la actividad") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    disabledTextColor = Color.Black,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    disabledContainerColor = Color.White
-                ),
-                singleLine = false,
-                maxLines = 4
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = selectedCategory,
+                    onValueChange = {},
+                    placeholder = { Text("Selecciona una categoría") },
+                    readOnly = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expanded = true },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        disabledTextColor = Color.Black,
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White
+                    ),
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = "Seleccionar categoría",
+                            tint = Color.Black,
+                            modifier = Modifier.clickable { expanded = true }
+                        )
+                    }
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categories.forEach { categoryItem ->
+                        DropdownMenuItem(
+                            text = { Text(categoryItem.name) },
+                            onClick = {
+                                selectedCategory = categoryItem.name
+                                individualActivityViewModel.changeCategory(categoryItem.name)
+                                individualActivityViewModel.changeCategoryId(categoryItem.id)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Botón Guardar
             Button(
-                onClick = { /* Lógica para guardar */ },
+                onClick = {
+                    val userId = SessionManager.getUserId()
+                    val activityId = GlobalStorage.getIdActivity()?.toInt()
+
+                    if (activityId != null) {
+                        val selectedCategoryId = categories.find { it.name == selectedCategory }?.id ?: 0
+                        val activity = UpdateIndividualActivityDTO(
+                            user_id = userId,
+                            title = title,
+                            category_id = selectedCategoryId,
+                            status = status,
+                            description = description,
+                            date = date
+                        )
+                        println("Actividad a enviar: \n$activity")
+
+                        individualActivityViewModel.updateIndividualActivity(activityId, activity)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -269,8 +333,13 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
             ) {
                 Text("Guardar", color = Color.White, fontSize = 16.sp)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = Color.White)
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = "Guardar",
+                    tint = Color.White
+                )
             }
+
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -281,7 +350,7 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
             // Botón Eliminar
             Button(
                 onClick = {
-                    val activityId = GlobalStorage.getIdActivity()
+                    val activityId = GlobalStorage.getIdActivity()?.toInt()
                     if (activityId != null) {
                         individualActivityViewModel.deleteIndividualActivity(activityId)
                     }
@@ -294,13 +363,18 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
             ) {
                 Text("Eliminar", color = Color.White, fontSize = 16.sp)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.White)
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
+                    tint = Color.White
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
+
 
 fun getMonthName(month: Int): String {
     return listOf(
