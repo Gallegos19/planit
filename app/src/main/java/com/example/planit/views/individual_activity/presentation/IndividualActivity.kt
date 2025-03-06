@@ -32,6 +32,7 @@ import com.example.planit.core.data.GlobalStorage
 import com.example.planit.core.data.SessionManager
 import com.example.planit.views.individual_activity.data.model.UpdateIndividualActivityDTO
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -148,13 +149,16 @@ fun ContentForm(individualActivityViewModel: IndividualActivityViewModel) {
     val datePickerDialog = DatePickerDialog(
         context,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            val newDate = "$dayOfMonth de ${getMonthName(month)} del $year"
+            val formattedMonth = (month + 1).toString().padStart(2, '0') // Asegura dos dígitos en el mes
+            val formattedDay = dayOfMonth.toString().padStart(2, '0') // Asegura dos dígitos en el día
+            val newDate = "$year-$formattedMonth-$formattedDay"
             individualActivityViewModel.changeDate(newDate)
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     )
+
 
     Box(
         modifier = Modifier
