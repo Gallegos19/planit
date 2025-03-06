@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "727938436391",
+    "project_id": "concise-haven-450204-m1",
+    "storage_bucket": "concise-haven-450204-m1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727938436391:android:0eb7b3422b17a68f8e2d02",
+        "android_client_info": {
+          "package_name": "com.example.planit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9TXRHnaoRhIe5J25MNI_WzxVTsGg4RX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

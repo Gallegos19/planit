@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.planit.R
 import com.example.planit.components.left_bar.data.model.ActivityUserDTO
+import com.example.planit.components.left_bar.data.model.GroupDTO
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,6 +39,7 @@ fun LeftBar(
 
     // Estado del ViewModel
     val activities by remember { derivedStateOf { leftBarViewModel.activities } }
+    val groups by remember { derivedStateOf { leftBarViewModel.groups }}
     val loading by remember { derivedStateOf { leftBarViewModel.loading } }
     val error by remember { derivedStateOf { leftBarViewModel.error } }
 
@@ -106,6 +108,40 @@ fun LeftBar(
                 scope.launch { onClose() }
                 onNavigate("teamSpaces")
             }
+
+            when {
+                loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+
+                error.isNotEmpty() -> {
+                    Text(
+                        text = "Error: $error",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                groups.isNotEmpty() -> {
+                    Column(modifier = Modifier.padding(start = 16.dp)) {
+                        groups.forEach { group ->
+                            GroupItem(group) {
+                                scope.launch {
+                                    onClose() // Cierra la barra antes de navegar
+                                    leftBarViewModel.changeGroupId(group.id)
+                                    navigationToGeneralTeam()
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    Text(
+                        text = "No tienes grupos registrados",
+                        color = Color.Gray,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -134,6 +170,20 @@ fun ActivityItem(activity: ActivityUserDTO, onClick: () -> Unit) {
             .padding(8.dp)
     ) {
         Text(text = activity.title, color = Color.Black, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+fun GroupItem(group: GroupDTO, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 16.dp)
+            .background(Color.LightGray.copy(alpha = 0.3f))
+            .clickable { onClick() }  // Hace que el grupo sea seleccionable
+            .padding(8.dp)
+    ) {
+        Text(text = group.name, color = Color.Black, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
