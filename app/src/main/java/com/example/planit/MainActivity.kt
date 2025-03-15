@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
-                    NavigationWrapper(Modifier.padding(innerPadding))
+                    NavigationWrapper(Modifier.padding(innerPadding), this)
                 }
             }
         }
