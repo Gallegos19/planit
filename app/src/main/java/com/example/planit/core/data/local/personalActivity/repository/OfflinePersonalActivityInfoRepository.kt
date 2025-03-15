@@ -5,6 +5,7 @@ import com.example.planit.core.data.local.PlanItDatabase
 import com.example.planit.core.data.local.personalActivity.entities.PersonalActivity
 import com.example.planit.core.data.local.personalActivity.entities.PersonalActivityInfo
 import com.example.planit.core.data.local.personalActivity.relations.PersonalActivityWithInfo
+import com.google.common.primitives.UnsignedBytes.toInt
 
 
 class OfflinePersonalActivityInfoRepository(context: Context): PersonalActivityInfoRepository {
@@ -19,11 +20,11 @@ class OfflinePersonalActivityInfoRepository(context: Context): PersonalActivityI
     ) {
         val infoId = personalActivityInfoDao.insert(personalActivityInfo)
 
-        if(infoId == -1) {
+        if (infoId == -1L) {
             throw Exception("Error al insertar la información de la actividad")
         }
 
-        val personalActivityWithInfo = personalActivity.copy(activityId = infoId)
+        val personalActivityWithInfo = personalActivity.copy(activityId = toInt(infoId.toByte()))
         personalActivityDao.insert(personalActivityWithInfo)
     }
 
