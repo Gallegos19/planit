@@ -1,12 +1,14 @@
 package com.example.planit.core.navigation
 
 import CreateIndividualActivitiesViewModel
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planit.components.left_bar.presentation.LeftBarViewModel
+import com.example.planit.core.data.local.AppDataContainer
 import com.example.planit.views.add_team.presentation.AddTeam
 import com.example.planit.views.add_team.presentation.AddTeamViewModel
 import com.example.planit.views.create_activities_team.presentation.CreateActivitiesTeam
@@ -25,9 +27,12 @@ import com.example.planit.views.register.presentation.RegisterViewModel
 import com.example.planit.views.watch_activity_team.presentation.WatchActivityTeam
 
 @Composable
-fun NavigationWrapper(modifier: Modifier = Modifier){
+fun NavigationWrapper(modifier: Modifier = Modifier, ctx: Context){
     val navController = rememberNavController()
     val leftBarViewModel= LeftBarViewModel()
+    val container = AppDataContainer(ctx)
+
+    container.personalActivityRepository
 
     NavHost(navController = navController, startDestination = Login){
         composable<Login> {
