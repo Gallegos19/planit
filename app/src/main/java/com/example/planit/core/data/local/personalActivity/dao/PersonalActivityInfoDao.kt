@@ -14,7 +14,7 @@ import com.example.planit.core.data.local.personalActivity.relations.PersonalAct
 interface PersonalActivityInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(personalActivityInfo: PersonalActivityInfo): Int
+    suspend fun insert(personalActivityInfo: PersonalActivityInfo): Long
 
     @Transaction()
     @Query("SELECT * FROM personal_activity_info WHERE id = :id")
