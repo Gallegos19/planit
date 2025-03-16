@@ -1,14 +1,20 @@
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planit.core.data.GlobalStorage
+import com.example.planit.core.data.local.personalActivity.entities.PersonalActivity
+import com.example.planit.core.data.local.personalActivity.entities.PersonalActivityInfo
+import com.example.planit.core.data.local.personalActivity.repository.PersonalActivityInfoRepository
 import com.example.planit.views.create_individual_activities.data.model.CreateIndividualActivityDTO
 import com.example.planit.views.create_individual_activities.domain.CreateIndividualActivityUseCase
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
-class CreateIndividualActivitiesViewModel : ViewModel() {
+class CreateIndividualActivitiesViewModel(private val repository: PersonalActivityInfoRepository) : ViewModel() {
 
     private val createActivityUse = CreateIndividualActivityUseCase()
+
 
     var loading = mutableStateOf(false)
         private set
@@ -54,6 +60,21 @@ class CreateIndividualActivitiesViewModel : ViewModel() {
             loading.value = true
             try {
                 val result = createActivityUse.createIndividualActivity(activity)
+                val info = PersonalActivityInfo(
+                    categoryId = activity.category_id,
+                    description = activity.description,
+                    status = activity.status,
+                    dateTo = activity.date
+                )
+
+                val activityWithInfo = PersonalActivity(
+                    userId = activity.user_id,
+                    activityId = 0,
+                    title = activity.title
+                )
+
+                repository.insertPersonalActivityWithInfo(info, activityWithInfo)
+
                 result.onSuccess {
                     GlobalStorage.saveUploadData(upload = true)
                     message.value = "Actividad creada con éxito"

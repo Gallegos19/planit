@@ -12,4 +12,6 @@ interface PersonalActivityInfoRepository {
     fun findPersonalActivityInfo(id: Int): PersonalActivityWithInfo
 
     fun findPersonalActivities(): List<PersonalActivity>
+
+    suspend fun findMaxId(): Long
 }
