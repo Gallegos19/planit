@@ -24,7 +24,7 @@ class OfflinePersonalActivityInfoRepository(context: Context): PersonalActivityI
             throw Exception("Error al insertar la información de la actividad")
         }
 
-        val personalActivityWithInfo = personalActivity.copy(activityId = toInt(infoId.toByte()))
+        val personalActivityWithInfo = personalActivity.copy(activityId = infoId.toInt())
         personalActivityDao.insert(personalActivityWithInfo)
     }
 
@@ -32,5 +32,6 @@ class OfflinePersonalActivityInfoRepository(context: Context): PersonalActivityI
 
     override fun findPersonalActivities(): List<PersonalActivity> = personalActivityDao.findAll()
 
+    override suspend fun findMaxId(): Long = personalActivityInfoDao.findMaxId()
 
 }

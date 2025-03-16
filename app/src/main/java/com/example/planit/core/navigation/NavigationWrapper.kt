@@ -32,8 +32,6 @@ fun NavigationWrapper(modifier: Modifier = Modifier, ctx: Context){
     val leftBarViewModel= LeftBarViewModel()
     val container = AppDataContainer(ctx)
 
-    container.personalActivityRepository
-
     NavHost(navController = navController, startDestination = Login){
         composable<Login> {
             LoginScreen(
@@ -78,7 +76,7 @@ fun NavigationWrapper(modifier: Modifier = Modifier, ctx: Context){
         }
 
         composable<CreateIndividualActivities> {
-            CreateIndividualActivities (createIndividualActivitiesViewModel = CreateIndividualActivitiesViewModel(),leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)}, navigationToHome = {navController.navigate(Home)}, navigationToAddTeam = {navController.navigate(AddTeam)})
+            CreateIndividualActivities (createIndividualActivitiesViewModel = CreateIndividualActivitiesViewModel(container.personalActivityRepository),leftBarViewModel,navController, navigateToLogin = {navController.navigate(Login)}, navigationToIndividualActivity = {navController.navigate(IndividualActivity)}, navigationToGeneralTeam = {navController.navigate(GeneralTeam)}, navigationToCreateIndividualActivity = {navController.navigate(CreateIndividualActivities)}, navigationToHome = {navController.navigate(Home)}, navigationToAddTeam = {navController.navigate(AddTeam)})
         }
 
         composable<AddTeam> {

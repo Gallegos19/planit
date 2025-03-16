@@ -20,4 +20,7 @@ interface PersonalActivityInfoDao {
     @Query("SELECT * FROM personal_activity_info WHERE id = :id")
     fun findOne(id: Int): PersonalActivityWithInfo
 
+    @Query("SELECT COALESCE(MAX(id), 0) FROM personal_activity_info")
+    suspend fun findMaxId(): Long
+
 }
