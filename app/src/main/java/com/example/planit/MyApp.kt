@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
+import com.example.planit.core.data.GlobalStorage
 import com.example.planit.core.data.SessionManager
 import com.example.planit.utils.save_token.data.model.TokenDTO
 import com.example.planit.utils.save_token.domain.SaveTokenUseCase
@@ -20,6 +21,8 @@ class MyApp : Application() {
     }
 
     override fun onCreate() {
+        GlobalStorage.init(this)
+        SessionManager.init(this)
         val saveToken = SaveTokenUseCase()
         super.onCreate()
         println("App creada")

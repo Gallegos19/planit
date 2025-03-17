@@ -1,7 +1,9 @@
 package com.example.planit
 
 import android.Manifest
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,13 +21,18 @@ import androidx.core.content.ContextCompat
 import com.example.planit.core.data.GlobalStorage
 import com.example.planit.core.data.SessionManager
 import com.example.planit.core.navigation.NavigationWrapper
+import com.example.planit.network.NetworkReceiver
 import com.example.planit.ui.theme.PlanitTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var networkReceiver: NetworkReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        GlobalStorage.init(this)
-        SessionManager.init(this)
+
+        networkReceiver = NetworkReceiver()
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(networkReceiver, intentFilter)
 
         enableEdgeToEdge()
 
@@ -42,6 +49,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(networkReceiver) // 🔹 Evita fugas de memoria
     }
 
     private fun pedirPermisoNotificacion() {

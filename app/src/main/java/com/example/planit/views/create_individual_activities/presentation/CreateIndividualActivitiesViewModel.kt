@@ -2,7 +2,10 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planit.components.left_bar.data.model.ActivityUserDTO
+import com.example.planit.components.left_bar.domain.GetActivityUseCase
 import com.example.planit.core.data.GlobalStorage
+import com.example.planit.core.data.SessionManager
 import com.example.planit.core.data.local.personalActivity.entities.PersonalActivity
 import com.example.planit.core.data.local.personalActivity.entities.PersonalActivityInfo
 import com.example.planit.core.data.local.personalActivity.repository.PersonalActivityInfoRepository
@@ -10,10 +13,18 @@ import com.example.planit.views.create_individual_activities.data.model.CreateIn
 import com.example.planit.views.create_individual_activities.domain.CreateIndividualActivityUseCase
 import kotlinx.coroutines.launch
 import okhttp3.internal.wait
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CreateIndividualActivitiesViewModel(private val repository: PersonalActivityInfoRepository) : ViewModel() {
 
     private val createActivityUse = CreateIndividualActivityUseCase()
+    val apiService = GetActivityUseCase()
+
+
+    private val _activities = mutableStateOf<List<ActivityUserDTO>>(emptyList())
+    val activities: List<ActivityUserDTO> get() = _activities.value
 
 
     var loading = mutableStateOf(false)

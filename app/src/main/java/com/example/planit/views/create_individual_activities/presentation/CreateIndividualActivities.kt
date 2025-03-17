@@ -184,6 +184,7 @@ fun ActivityForm(createIndividualActivitiesViewModel: CreateIndividualActivities
                         description = createIndividualActivitiesViewModel.description.value,
                         date = createIndividualActivitiesViewModel.date.value
                     )
+
                     createIndividualActivitiesViewModel.createIndividualActivity(activity)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
